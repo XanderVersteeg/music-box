@@ -1,5 +1,7 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
+
+import type { Metadata } from "next";
 import "../styles/globals.css";
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import { navItems } from "@/data";
@@ -26,12 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <FloatingNav navItems={navItems} />
-        {children}
-      </body>
+      <SessionProvider>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <FloatingNav navItems={navItems} />
+          {children}
+        </body>
+      </SessionProvider>
     </html>
   );
 }

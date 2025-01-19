@@ -6,8 +6,11 @@ import {
   useScroll,
   useMotionValueEvent,
 } from "framer-motion";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { signIn, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+
+import { cn } from "@/lib/utils";
 
 export const FloatingNav = ({
   navItems,
@@ -20,6 +23,8 @@ export const FloatingNav = ({
   }[];
   className?: string;
 }) => {
+  const { data: session } = useSession();
+
   const { scrollYProgress } = useScroll();
 
   const [visible, setVisible] = useState(true);
@@ -92,10 +97,16 @@ export const FloatingNav = ({
 
         {/* Auth */}
         <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
-          <span>Login</span>
+          {session?.user ? (
+            <span onClick={() => signOut()}>Sign out</span>
+          ) : (
+            <span onClick={() => signIn("google")}>Sign in</span>
+          )}
           <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent h-px" />
         </button>
       </motion.div>
     </AnimatePresence>
   );
 };
+
+// TODO: fix navbar visability als geen scroll is
