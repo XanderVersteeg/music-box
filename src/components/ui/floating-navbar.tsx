@@ -29,12 +29,29 @@ export const FloatingNav = ({
 
   const [visible, setVisible] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isScrollable, setIsScrollable] = useState(false);
+
+  useEffect(() => {
+    // Check if the page is scrollable
+    const checkScrollable = () => {
+      const scrollableHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      setIsScrollable(scrollableHeight > 0);
+    };
+
+    checkScrollable();
+    window.addEventListener("resize", checkScrollable);
+
+    return () => window.removeEventListener("resize", checkScrollable);
+  }, []);
 
   useEffect(() => {
     setVisible(true);
   }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
+    if (!isScrollable) return; // Always show if not scrollable
+
     if (typeof current === "number") {
       const direction = current - scrollYProgress.getPrevious()!;
       const isAtTop = current <= 0.01;
@@ -67,7 +84,6 @@ export const FloatingNav = ({
           className
         )}
       >
-        {/* Items */}
         {navItems.map(
           (
             navItem: { name: string; link: string; icon?: JSX.Element },
@@ -86,7 +102,6 @@ export const FloatingNav = ({
           )
         )}
 
-        {/* Searchbar */}
         <div
           className={cn(
             "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
@@ -95,7 +110,6 @@ export const FloatingNav = ({
           <span className="hidden sm:block text-sm">Searchbar</span>
         </div>
 
-        {/* Auth */}
         <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
           {session?.user ? (
             <span onClick={() => signOut()}>Sign out</span>
@@ -108,5 +122,3 @@ export const FloatingNav = ({
     </AnimatePresence>
   );
 };
-
-// TODO: fix navbar visability als geen scroll is
