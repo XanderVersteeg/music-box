@@ -172,12 +172,12 @@ export const FloatingNav = ({
           searchOutput.artists?.items.length > 0 && (
             <div className="mt-4 w-full flex flex-col items-center pr-4">
               {/* Render Top 2 Artists */}
-              <div className="w-full max-w-xl">
+              <div className="w-full max-w-md">
                 {renderSearchResults(searchOutput?.artists?.items, true)}
               </div>
 
               {/* Render Top 2 Albums */}
-              <div className="w-full max-w-xl">
+              <div className="w-full max-w-md">
                 {renderSearchResults(searchOutput?.albums?.items, false)}
               </div>
             </div>
