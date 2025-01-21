@@ -8,7 +8,7 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import Link from "next/link";
-import { signIn, signOut } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
@@ -120,7 +120,7 @@ export const FloatingNav = ({
           duration: 0.2,
         }}
         className={cn(
-          "flex flex-col max-w-fit fixed top-10 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] bg-white dark:bg-black shadow-md z-[5000] px-6 py-4 items-center space-x-4",
+          "flex flex-col max-w-fit fixed top-6 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] bg-white dark:bg-black shadow-md z-[5000] px-6 py-4 items-center space-x-4",
           "rounded-3xl", // Custom border-radius for half-circle style
           className
         )}
@@ -158,7 +158,7 @@ export const FloatingNav = ({
 
           <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
             {session?.user ? (
-              <span onClick={() => signOut()}>Sign out</span>
+              <Link href={"/"}>Profile</Link>
             ) : (
               <span onClick={() => signIn("google")}>Sign in</span>
             )}
@@ -172,12 +172,12 @@ export const FloatingNav = ({
           searchOutput.artists?.items.length > 0 && (
             <div className="mt-4 w-full flex flex-col items-center pr-4">
               {/* Render Top 2 Artists */}
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-md" style={{ width: "26rem" }}>
                 {renderSearchResults(searchOutput?.artists?.items, true)}
               </div>
 
               {/* Render Top 2 Albums */}
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-md" style={{ width: "26rem" }}>
                 {renderSearchResults(searchOutput?.albums?.items, false)}
               </div>
             </div>
