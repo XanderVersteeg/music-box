@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { JSX, useState, useEffect } from "react";
 import {
@@ -13,7 +14,11 @@ import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { placeholders } from "@/data";
 import { PlaceholdersAndVanishInput } from "./placeholders-and-vanish-input";
-import { spotifyGetToken, spotifySearchArtists } from "@/server/spotify";
+import {
+  spotifyGetToken,
+  spotifySearchAlbums,
+  spotifySearchArtists,
+} from "@/server/spotify";
 import { Search } from "@/types";
 
 export const FloatingNav = ({
@@ -45,7 +50,15 @@ export const FloatingNav = ({
           tokenResponse.access_token,
           searchInput
         );
-        setSearchOutput(artistResponse);
+        const albumResponse = await spotifySearchAlbums(
+          tokenResponse.access_token,
+          searchInput
+        );
+        const combinedResponse: Search = {
+          artists: artistResponse.artists,
+          albums: albumResponse.albums,
+        };
+        setSearchOutput(combinedResponse);
       }
     })();
   }, [searchInput]);
@@ -107,7 +120,7 @@ export const FloatingNav = ({
           duration: 0.2,
         }}
         className={cn(
-          "flex flex-col max-w-fit fixed top-10 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] bg-white dark:bg-black shadow-md z-[5000] pr-2 pl-8 py-2 items-center space-x-4",
+          "flex flex-col max-w-fit fixed top-10 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] bg-white dark:bg-black shadow-md z-[5000] px-6 py-4 items-center space-x-4",
           "rounded-3xl", // Custom border-radius for half-circle style
           className
         )}
@@ -153,13 +166,46 @@ export const FloatingNav = ({
           </button>
         </div>
 
-        {searchInput && (
-          <div className="mt-2 text-sm text-neutral-600 dark:text-neutral-50">
-            {/* {searchInput} */}
-            {JSON.stringify(searchOutput?.artists?.items[0].name, null, 2)}
-          </div>
-        )}
+        {searchOutput?.albums?.items?.length &&
+          searchOutput.artists?.items.length &&
+          searchOutput?.albums?.items?.length > 0 &&
+          searchOutput.artists?.items.length > 0 && (
+            <div className="mt-4 w-full flex flex-col items-center pr-4">
+              {/* Render Top 2 Artists */}
+              <div className="w-full max-w-xl">
+                {renderSearchResults(searchOutput?.artists?.items, true)}
+              </div>
+
+              {/* Render Top 2 Albums */}
+              <div className="w-full max-w-xl">
+                {renderSearchResults(searchOutput?.albums?.items, false)}
+              </div>
+            </div>
+          )}
       </motion.div>
     </AnimatePresence>
   );
+};
+
+const renderSearchResults = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  items: any[],
+  isArtist: boolean
+) => {
+  return items.slice(0, 2).map((item, index) => (
+    <Link
+      href={`/`}
+      key={`${isArtist ? "artist" : "album"}-${index}`}
+      className="py-4 px-2 dark:hover:bg-neutral-800 rounded-md flex items-center space-x-6 mb-4"
+    >
+      <img
+        src={item.images?.[0]?.url || "/placeholder.jpg"}
+        alt={item.name}
+        className="w-20 h-auto rounded-md"
+      />
+      <span className="text-lg font-medium text-neutral-800 dark:text-neutral-100">
+        {item.name}
+      </span>
+    </Link>
+  ));
 };

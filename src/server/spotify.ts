@@ -55,7 +55,7 @@ export async function spotifySearchArtists(
   return (await response.json()) as Search;
 }
 
-export async function searchAlbums(
+export async function spotifySearchAlbums(
   access_token: string,
   url: string
 ): Promise<Search> {
