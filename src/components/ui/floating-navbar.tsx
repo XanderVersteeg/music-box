@@ -20,6 +20,7 @@ import {
   spotifySearchArtists,
 } from "@/server/spotify";
 import { Search } from "@/types";
+import { User } from "@/app/api/users/route";
 
 export const FloatingNav = ({
   navItems,
@@ -44,22 +45,17 @@ export const FloatingNav = ({
 
   const navRef = useRef<HTMLDivElement>(null);
 
-  type User = {
-    name: string;
-  };
-
-  // TODO: tijdelijk dit moet een echte type worden
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/users");
+      const response = await fetch(`/api/users?id=${session?.user?.email}`);
       const data = await response.json();
       setUser(data[0]);
     };
 
     fetchData();
-  }, []);
+  }, [session?.user?.email]);
 
   useEffect(() => {
     void (async () => {
@@ -160,7 +156,7 @@ export const FloatingNav = ({
         }}
         className={cn(
           "flex flex-col max-w-fit fixed top-6 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] bg-white dark:bg-black shadow-md z-[5000] px-6 py-4 items-center space-x-4",
-          "rounded-3xl", // Custom border-radius for half-circle style
+          "rounded-3xl",
           className
         )}
       >

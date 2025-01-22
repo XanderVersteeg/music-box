@@ -7,9 +7,9 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/users");
+      const response = await fetch("/api/users?id=themovingcomic@gmail.com");
       const data = await response.json();
-      setUser(data[0]); // Assuming you want the first user
+      setUser(data[0]);
     };
 
     fetchData();
