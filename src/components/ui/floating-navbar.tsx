@@ -102,7 +102,7 @@ export const FloatingNav = ({
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitted");
+    setSearchInput("");
   };
 
   return (
@@ -170,7 +170,7 @@ export const FloatingNav = ({
           searchOutput.artists?.items.length &&
           searchOutput?.albums?.items?.length > 0 &&
           searchOutput.artists?.items.length > 0 && (
-            <div className="mt-4 w-full flex flex-col items-center pr-4">
+            <div className="mt-4 w-full flex flex-col items-center pr-3">
               {/* Render Top 2 Artists */}
               <div className="w-full max-w-md" style={{ width: "26rem" }}>
                 {renderSearchResults(searchOutput?.artists?.items, true)}
