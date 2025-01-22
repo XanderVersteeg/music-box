@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { JSX, useState, useEffect } from "react";
+import React, { JSX, useState, useEffect, useRef } from "react";
 import {
   motion,
   AnimatePresence,
@@ -40,6 +40,9 @@ export const FloatingNav = ({
   const [isScrollable, setIsScrollable] = useState(false);
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchOutput, setSearchOutput] = useState<Search>();
+  const [showResults, setShowResults] = useState(false);
+
+  const navRef = useRef<HTMLDivElement>(null);
 
   type User = {
     name: string;
@@ -61,7 +64,6 @@ export const FloatingNav = ({
   useEffect(() => {
     void (async () => {
       const tokenResponse = await spotifyGetToken();
-      console.log(tokenResponse);
       if (tokenResponse.access_token) {
         const artistResponse = await spotifySearchArtists(
           tokenResponse.access_token,
@@ -97,6 +99,24 @@ export const FloatingNav = ({
     setVisible(true);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current) {
+        if (navRef.current.contains(event.target as Node)) {
+          setShowResults(true);
+        } else {
+          setShowResults(false);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     if (!isScrollable) return;
 
@@ -115,6 +135,7 @@ export const FloatingNav = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
+    setShowResults(true);
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -125,6 +146,7 @@ export const FloatingNav = ({
   return (
     <AnimatePresence mode="wait">
       <motion.div
+        ref={navRef}
         initial={{
           opacity: hasInteracted ? 0 : 1,
           y: hasInteracted ? -100 : 0,
@@ -185,7 +207,8 @@ export const FloatingNav = ({
           </button>
         </div>
 
-        {searchOutput?.albums?.items?.length &&
+        {showResults &&
+          searchOutput?.albums?.items?.length &&
           searchOutput.artists?.items.length &&
           searchOutput?.albums?.items?.length > 0 &&
           searchOutput.artists?.items.length > 0 && (

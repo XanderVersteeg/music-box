@@ -16,6 +16,16 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+    <>
+      <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+      <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+      <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+      <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+      <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+      <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+      <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+      <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+      <div className="p-40">{user ? JSON.stringify(user) : "Loading..."}</div>
+    </>
   );
 }
