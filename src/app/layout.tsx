@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Music Box",
+  title: "MusicBox",
   description: "Review your favorite albums",
 };
 
