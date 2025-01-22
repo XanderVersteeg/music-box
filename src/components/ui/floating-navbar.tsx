@@ -41,6 +41,23 @@ export const FloatingNav = ({
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchOutput, setSearchOutput] = useState<Search>();
 
+  type User = {
+    name: string;
+  };
+
+  // TODO: tijdelijk dit moet een echte type worden
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch("/api/users");
+      const data = await response.json();
+      setUser(data[0]);
+    };
+
+    fetchData();
+  }, []);
+
   useEffect(() => {
     void (async () => {
       const tokenResponse = await spotifyGetToken();
@@ -158,7 +175,9 @@ export const FloatingNav = ({
 
           <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
             {session?.user ? (
-              <Link href={"/"}>Profile</Link>
+              <Link href={"/"}>
+                {user?.name ? <span>{user.name}</span> : <span>Profile</span>}
+              </Link>
             ) : (
               <span onClick={() => signIn("google")}>Sign in</span>
             )}
