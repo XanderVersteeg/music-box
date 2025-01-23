@@ -4,11 +4,11 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 
-export type User = typeof users.$inferInsert;
+export type UserType = typeof users.$inferInsert;
 
 export async function GET(
   request: Request
-): Promise<NextResponse<User[] | { error: string }>> {
+): Promise<NextResponse<UserType[] | { error: string }>> {
   const { searchParams } = new URL(request.url);
   const userEmail = searchParams.get("id");
 

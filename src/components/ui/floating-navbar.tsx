@@ -8,7 +8,7 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
@@ -20,7 +20,17 @@ import {
   spotifySearchArtists,
 } from "@/server/spotify";
 import { Search } from "@/types";
-import { User } from "@/app/api/users/route";
+import { UserType } from "@/app/api/users/route";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { LogOut, Settings, User } from "lucide-react";
 
 export const FloatingNav = ({
   navItems,
@@ -45,7 +55,7 @@ export const FloatingNav = ({
 
   const navRef = useRef<HTMLDivElement>(null);
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserType | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,29 +104,6 @@ export const FloatingNav = ({
   useEffect(() => {
     setVisible(true);
   }, []);
-
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (navRef.current) {
-  //       const target = event.target as Node;
-  //       const isClickInsideInput = navRef.current
-  //         .querySelector("input")
-  //         ?.contains(target);
-
-  //       if (isClickInsideInput) {
-  //         setShowResults(true);
-  //       } else {
-  //         setShowResults(false);
-  //       }
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     if (!isScrollable) return;
@@ -198,9 +185,43 @@ export const FloatingNav = ({
 
           <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
             {session?.user ? (
-              <Link href={`${user?.username}`} passHref>
-                {user?.name ? <span>{user.name}</span> : <span>Profile</span>}
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div>
+                    {user?.name ? (
+                      <span>{user.name}</span>
+                    ) : (
+                      <span>Profile</span>
+                    )}
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="">
+                  <DropdownMenuGroup>
+                    <Link href={`${user?.username}`}>
+                      <DropdownMenuItem className="hover:cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link href="/settings">
+                      <DropdownMenuItem className="hover:cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </DropdownMenuItem>
+                    </Link>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="hover:cursor-pointer"
+                    onClick={() => {
+                      void signOut();
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <span onClick={() => signIn("google")}>Sign in</span>
             )}
