@@ -6,8 +6,8 @@ import type {
   Album,
 } from "@/types";
 
-const client_id = "019dfbcf7af643e7b503df00bbbc0879";
-const client_secret = "989b36c305814e08b8949650c01ab001";
+const client_id = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
+const client_secret = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET;
 
 let cachedToken: AccessToken | null = null;
 let tokenExpiry: number | null = null;
