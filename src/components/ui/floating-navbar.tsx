@@ -147,7 +147,7 @@ export const FloatingNav = ({
           duration: 0.2,
         }}
         className={cn(
-          "flex flex-col max-w-fit fixed top-6 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] bg-white dark:bg-black shadow-md z-[5000] px-6 py-4 items-center space-x-4",
+          "flex flex-col max-w-fit fixed top-6 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] bg-white dark:bg-black shadow-md z-5000 px-6 py-4 items-center space-x-4",
           "rounded-3xl",
           className
         )}
@@ -225,7 +225,7 @@ export const FloatingNav = ({
             ) : (
               <span onClick={() => signIn("google")}>Sign in</span>
             )}
-            <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent h-px" />
+            <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-linear-to-r from-transparent via-blue-500 to-transparent h-px" />
           </button>
         </div>
 
