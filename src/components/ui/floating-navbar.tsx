@@ -20,7 +20,7 @@ import {
   spotifySearchArtists,
 } from "@/server/spotify";
 import { Search } from "@/types";
-import { UserType } from "@/app/api/users/route";
+import { UserType } from "@/app/api/user/route";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,7 +59,7 @@ export const FloatingNav = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`/api/users?id=${session?.user?.email}`);
+      const response = await fetch(`/api/user?id=${session?.user?.email}`);
       const data = await response.json();
       setUser(data[0]);
     };
