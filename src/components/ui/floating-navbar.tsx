@@ -95,28 +95,28 @@ export const FloatingNav = ({
     setVisible(true);
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (navRef.current) {
-        const target = event.target as Node;
-        const isClickInsideInput = navRef.current
-          .querySelector("input")
-          ?.contains(target);
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (navRef.current) {
+  //       const target = event.target as Node;
+  //       const isClickInsideInput = navRef.current
+  //         .querySelector("input")
+  //         ?.contains(target);
 
-        if (isClickInsideInput) {
-          setShowResults(true);
-        } else {
-          setShowResults(false);
-        }
-      }
-    };
+  //       if (isClickInsideInput) {
+  //         setShowResults(true);
+  //       } else {
+  //         setShowResults(false);
+  //       }
+  //     }
+  //   };
 
-    document.addEventListener("mousedown", handleClickOutside);
+  //   document.addEventListener("mousedown", handleClickOutside);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     if (!isScrollable) return;
@@ -198,7 +198,7 @@ export const FloatingNav = ({
 
           <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
             {session?.user ? (
-              <Link href={"/"}>
+              <Link href={`${user?.username}`} passHref>
                 {user?.name ? <span>{user.name}</span> : <span>Profile</span>}
               </Link>
             ) : (
@@ -237,7 +237,7 @@ const renderSearchResults = (
 ) => {
   return items.slice(0, 2).map((item, index) => (
     <Link
-      href={`/`}
+      href={`${isArtist ? "artist" : "album"}/${item.id}`}
       key={`${isArtist ? "artist" : "album"}-${index}`}
       className="py-4 px-2 dark:hover:bg-neutral-800 rounded-md flex items-center space-x-6 mb-4"
     >
