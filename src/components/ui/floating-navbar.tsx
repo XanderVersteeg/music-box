@@ -98,7 +98,12 @@ export const FloatingNav = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (navRef.current) {
-        if (navRef.current.contains(event.target as Node)) {
+        const target = event.target as Node;
+        const isClickInsideInput = navRef.current
+          .querySelector("input")
+          ?.contains(target);
+
+        if (isClickInsideInput) {
           setShowResults(true);
         } else {
           setShowResults(false);
