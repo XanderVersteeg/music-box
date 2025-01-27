@@ -41,7 +41,7 @@ export function UsernameCheckerForm(user: {
       setIsLoading(true);
 
       try {
-        const response = await fetch("/api/checkUsername", {
+        const response = await fetch("/api/users/checkUsername", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export function UsernameCheckerForm(user: {
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch("/api/updateUsername", {
+      const response = await fetch("/api/users/updateUsername", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
