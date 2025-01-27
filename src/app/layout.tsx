@@ -3,9 +3,10 @@ import { SessionProvider } from "next-auth/react";
 
 import type { Metadata } from "next";
 import "../styles/globals.css";
-import { FloatingNav } from "@/components/ui/floating-navbar";
+import { FloatingNav } from "@/components/floating-navbar";
 import { navItems } from "@/data";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import { UsernameChecker } from "@/components/username-checker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <UsernameChecker />
             {children}
           </ThemeProvider>
         </body>

@@ -10,10 +10,11 @@ import {
 import Link from "next/link";
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import { LogOut, Settings, User } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { placeholders } from "@/data";
-import { PlaceholdersAndVanishInput } from "./placeholders-and-vanish-input";
+import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import {
   spotifyGetToken,
   spotifySearchAlbums,
@@ -29,8 +30,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { LogOut, Settings, User } from "lucide-react";
 
 export const FloatingNav = ({
   navItems,
@@ -183,11 +182,11 @@ export const FloatingNav = ({
             />
           </div>
 
-          <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
+          <button className=" hover:cursor-pointer border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
             {session?.user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <div>
+                  <div className="">
                     {user?.name ? (
                       <span>{user.name}</span>
                     ) : (
@@ -273,3 +272,5 @@ const renderSearchResults = (
     </Link>
   ));
 };
+
+// TODO: fix scrollbar
