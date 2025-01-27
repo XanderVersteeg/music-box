@@ -21,15 +21,13 @@ export async function POST(request: Request) {
       .where(sql`LOWER(${users.username}) = LOWER(${username})`);
 
     if (data.length > 0) {
-      return NextResponse.json(
-        { error: "Username already taken" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error checking username:", error);
+
     return NextResponse.json(
       { error: "An unexpected error occurred" },
       { status: 500 }
