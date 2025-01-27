@@ -198,7 +198,7 @@ export const FloatingNav = ({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="">
                   <DropdownMenuGroup>
-                    <Link href={`${user?.username}`}>
+                    <Link href={`/${user?.username}`}>
                       <DropdownMenuItem className="hover:cursor-pointer">
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
@@ -259,7 +259,7 @@ const renderSearchResults = (
 ) => {
   return items.slice(0, 2).map((item, index) => (
     <Link
-      href={`${isArtist ? "artist" : "album"}/${item.id}`}
+      href={`/${isArtist ? "artist" : "album"}/${item.id}`}
       key={`${isArtist ? "artist" : "album"}-${index}`}
       className="py-4 px-2 dark:hover:bg-neutral-800 rounded-md flex items-center space-x-6 mb-4"
     >
@@ -276,3 +276,4 @@ const renderSearchResults = (
 };
 
 // TODO: fix scrollbar
+// TODO: maak deel server side

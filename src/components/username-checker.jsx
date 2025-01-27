@@ -1,4 +1,3 @@
-import z from "zod";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -6,22 +5,11 @@ import { users } from "@/db/schema";
 import { auth } from "@/auth";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components//ui/form";
 import { UsernameCheckerForm } from "./username-checker-form";
 
 export async function UsernameChecker() {
@@ -54,3 +42,5 @@ export async function UsernameChecker() {
     );
   }
 }
+
+// TODO: haal weg na update
