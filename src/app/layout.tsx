@@ -7,6 +7,7 @@ import { FloatingNav } from "@/components/floating-navbar";
 import { navItems } from "@/data";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { UsernameChecker } from "@/components/username-checker";
+import { Provider } from "@/components/provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <FloatingNav navItems={navItems} />
+          <Provider>
+            <FloatingNav navItems={navItems} />
+          </Provider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

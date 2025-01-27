@@ -15,6 +15,8 @@ import { UsernameCheckerForm } from "./username-checker-form";
 export async function UsernameChecker() {
   const session = await auth();
 
+  if (!session) return null;
+
   const data =
     session.user.email &&
     (await db.select().from(users).where(eq(users.email, session.user.email)));

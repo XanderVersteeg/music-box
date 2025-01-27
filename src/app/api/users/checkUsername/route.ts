@@ -1,10 +1,10 @@
 import { sql } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { db } from "@/db";
 import { users } from "@/db/schema";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { username } = await request.json();
 

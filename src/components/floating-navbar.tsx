@@ -11,6 +11,7 @@ import Link from "next/link";
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { LogOut, Settings, User } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 import { cn } from "@/lib/utils";
 import { placeholders } from "@/data";
@@ -21,7 +22,7 @@ import {
   spotifySearchArtists,
 } from "@/server/spotify";
 import { Search } from "@/types";
-import { UserType } from "@/app/api/users/getUser/route";
+// import { UserType } from "@/app/api/users/getUser/route";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +31,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { UserType } from "@/app/api/users/getUser/route";
 
 export const FloatingNav = ({
   navItems,
@@ -54,19 +56,16 @@ export const FloatingNav = ({
 
   const navRef = useRef<HTMLDivElement>(null);
 
-  const [user, setUser] = useState<UserType | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["getUser", session?.user?.email],
+    queryFn: async (): Promise<Array<UserType>> => {
       const response = await fetch(
         `/api/users/getUser?email=${session?.user?.email}`
       );
-      const data = await response.json();
-      setUser(data[0]);
-    };
 
-    fetchData();
-  }, [session?.user?.email]);
+      return response.json();
+    },
+  });
 
   useEffect(() => {
     void (async () => {
@@ -154,6 +153,7 @@ export const FloatingNav = ({
         )}
       >
         <div className="flex items-center space-x-4">
+          {/* Items */}
           {navItems.map(
             (
               navItem: { name: string; link: string; icon?: JSX.Element },
@@ -172,6 +172,7 @@ export const FloatingNav = ({
             )
           )}
 
+          {/* SearchBar */}
           <div
             className={cn(
               "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
@@ -184,21 +185,22 @@ export const FloatingNav = ({
             />
           </div>
 
+          {/* Auth */}
           <button className=" hover:cursor-pointer border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
-            {session?.user ? (
+            {!isLoading && data && data[0] ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <div className="">
-                    {user?.name ? (
-                      <span>{user.name}</span>
+                  <div>
+                    {data[0]?.username ? (
+                      <span>{data[0].username}</span>
                     ) : (
                       <span>Profile</span>
                     )}
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="">
+                <DropdownMenuContent>
                   <DropdownMenuGroup>
-                    <Link href={`/${user?.username}`}>
+                    <Link href={`/${data && data[0]?.username}`}>
                       <DropdownMenuItem className="hover:cursor-pointer">
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
@@ -230,6 +232,7 @@ export const FloatingNav = ({
           </button>
         </div>
 
+        {/* Results */}
         {showResults &&
           searchOutput?.albums?.items?.length &&
           searchOutput.artists?.items.length &&

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -6,9 +6,7 @@ import { users } from "@/db/schema";
 
 export type UserType = typeof users.$inferInsert;
 
-export async function GET(
-  request: Request
-): Promise<NextResponse<UserType[] | { error: string }>> {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get("email");
