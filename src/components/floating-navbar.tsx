@@ -22,7 +22,6 @@ import {
   spotifySearchArtists,
 } from "@/server/spotify";
 import { Search } from "@/types";
-// import { UserType } from "@/app/api/users/getUser/route";
 import {
   DropdownMenu,
   DropdownMenuContent,

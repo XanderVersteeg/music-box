@@ -7,7 +7,7 @@ import { FloatingNav } from "@/components/floating-navbar";
 import { navItems } from "@/data";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { UsernameChecker } from "@/components/username-checker";
-import { Provider } from "@/components/provider";
+import { QueryClientProvider } from "@/components/provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,16 +35,18 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Provider>
+          <QueryClientProvider>
             <FloatingNav navItems={navItems} />
-          </Provider>
+          </QueryClientProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
-            <UsernameChecker />
+            <QueryClientProvider>
+              <UsernameChecker />
+            </QueryClientProvider>
             {children}
           </ThemeProvider>
         </body>
