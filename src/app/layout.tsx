@@ -33,7 +33,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <SessionProvider>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased pt-32`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <QueryClientProvider>
             <FloatingNav navItems={navItems} />
