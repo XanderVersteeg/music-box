@@ -1,12 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
+
 "use client";
-import React, { JSX, useState, useEffect, useRef } from "react";
+
 import {
   motion,
   AnimatePresence,
   useScroll,
   useMotionValueEvent,
 } from "framer-motion";
+import React, { JSX, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
@@ -16,12 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { placeholders } from "@/data";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-import {
-  spotifyGetToken,
-  spotifySearchAlbums,
-  spotifySearchArtists,
-} from "@/server/spotify";
-import { Search } from "@/types";
+import { AccessToken, Search } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,8 +47,15 @@ export const FloatingNav = ({
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isScrollable, setIsScrollable] = useState(false);
   const [searchInput, setSearchInput] = useState<string>("");
-  const [searchOutput, setSearchOutput] = useState<Search>();
   const [showResults, setShowResults] = useState(false);
+
+  const client_id = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
+  const client_secret = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET;
+
+  const cachedToken: AccessToken | null = null;
+  const tokenExpiry: number | null = null;
+
+  const getCurrentTimestamp = (): number => Math.floor(Date.now() / 1000);
 
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -66,26 +70,62 @@ export const FloatingNav = ({
     },
   });
 
-  useEffect(() => {
-    void (async () => {
-      const tokenResponse = await spotifyGetToken();
-      if (tokenResponse.access_token) {
-        const artistResponse = await spotifySearchArtists(
-          tokenResponse.access_token,
-          searchInput
-        );
-        const albumResponse = await spotifySearchAlbums(
-          tokenResponse.access_token,
-          searchInput
-        );
-        const combinedResponse: Search = {
-          artists: artistResponse.artists,
-          albums: albumResponse.albums,
-        };
-        setSearchOutput(combinedResponse);
+  const { data: tokenResponse } = useQuery({
+    queryKey: ["spotifyToken"],
+    queryFn: async (): Promise<AccessToken> => {
+      if (cachedToken && tokenExpiry && getCurrentTimestamp() < tokenExpiry) {
+        return cachedToken;
       }
-    })();
-  }, [searchInput]);
+
+      const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        body: new URLSearchParams({
+          grant_type: "client_credentials",
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization:
+            "Basic " +
+            Buffer.from(client_id + ":" + client_secret).toString("base64"),
+        },
+      });
+      return response.json();
+    },
+  });
+
+  const { data: searchAlbum } = useQuery({
+    queryKey: ["searchAlbums", searchInput],
+    queryFn: async (): Promise<Search | undefined> => {
+      if (tokenResponse?.access_token) {
+        const response = await fetch(
+          "https://api.spotify.com/v1/search?q=" + searchInput + "&type=album",
+          {
+            method: "GET",
+            headers: { Authorization: "Bearer " + tokenResponse.access_token },
+          }
+        );
+
+        return response.json();
+      }
+    },
+  });
+
+  const { data: searchArtist } = useQuery({
+    queryKey: ["searchArtists", searchInput],
+    queryFn: async (): Promise<Search | undefined> => {
+      if (tokenResponse?.access_token) {
+        const response = await fetch(
+          "https://api.spotify.com/v1/search?q=" + searchInput + "&type=artist",
+          {
+            method: "GET",
+            headers: { Authorization: "Bearer " + tokenResponse.access_token },
+          }
+        );
+
+        return response.json();
+      }
+    },
+  });
 
   useEffect(() => {
     const checkScrollable = () => {
@@ -233,19 +273,19 @@ export const FloatingNav = ({
 
         {/* Results */}
         {showResults &&
-          searchOutput?.albums?.items?.length &&
-          searchOutput.artists?.items.length &&
-          searchOutput?.albums?.items?.length > 0 &&
-          searchOutput.artists?.items.length > 0 && (
-            <div className="mt-4 w-full flex flex-col items-center pr-3">
+          searchAlbum?.albums?.items?.length &&
+          searchArtist?.artists?.items.length &&
+          searchAlbum?.albums?.items.length > 0 &&
+          searchArtist?.artists?.items.length > 0 && (
+            <div className="mt-4 w-full flex flex-col items-center">
               {/* Render Top 2 Artists */}
               <div className="w-full max-w-md" style={{ width: "26rem" }}>
-                {renderSearchResults(searchOutput?.artists?.items, true)}
+                {renderSearchResults(searchArtist?.artists?.items, true)}
               </div>
 
               {/* Render Top 2 Albums */}
               <div className="w-full max-w-md" style={{ width: "26rem" }}>
-                {renderSearchResults(searchOutput?.albums?.items, false)}
+                {renderSearchResults(searchAlbum?.albums?.items, false)}
               </div>
             </div>
           )}
@@ -276,6 +316,3 @@ const renderSearchResults = (
     </Link>
   ));
 };
-
-// TODO: fix scrollbar
-// TODO: maak deel server side
