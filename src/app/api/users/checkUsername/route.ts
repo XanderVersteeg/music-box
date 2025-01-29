@@ -34,3 +34,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// TODO: This should be a GET request

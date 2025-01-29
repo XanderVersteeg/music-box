@@ -10,6 +10,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import type { AdapterAccountType } from "next-auth/adapters";
+import { relations } from "drizzle-orm";
 
 const connectionString = "postgres://postgres:postgres@localhost:5432/drizzle";
 const pool = postgres(connectionString, { max: 1 });
@@ -28,6 +29,43 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+  follower: many(followings, { relationName: "follower" }),
+  following: many(followings, { relationName: "following" }),
+}));
+
+export const followings = pgTable(
+  "following",
+  {
+    followerId: text("followerId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    followingId: text("followingId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (following) => [
+    {
+      pk: primaryKey({
+        columns: [following.followerId, following.followingId],
+      }),
+    },
+  ]
+);
+
+export const followingsRelations = relations(followings, ({ one }) => ({
+  follower: one(users, {
+    fields: [followings.followerId],
+    references: [users.id],
+    relationName: "follower",
+  }),
+  following: one(users, {
+    fields: [followings.followingId],
+    references: [users.id],
+    relationName: "following",
+  }),
+}));
 
 export const accounts = pgTable(
   "account",
