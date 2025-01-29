@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { QueryClientProvider } from "./provider";
+import { QueryClientProvider } from "./query-client-provider";
 import { UserType } from "@/app/api/users/getUser/route";
 import { usernameRegex } from "@/data";
 import {

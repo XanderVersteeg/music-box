@@ -7,7 +7,7 @@ import { FloatingNav } from "@/components/floating-navbar";
 import { navItems } from "@/data";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { UsernameChecker } from "@/components/username-checker";
-import { QueryClientProvider } from "@/components/provider";
+import { QueryClientProvider } from "@/components/query-client-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

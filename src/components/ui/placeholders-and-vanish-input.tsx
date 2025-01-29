@@ -6,6 +6,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+
 import { cn } from "@/lib/utils";
 
 export function PlaceholdersAndVanishInput({
@@ -51,6 +53,12 @@ export function PlaceholdersAndVanishInput({
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState("");
   const [animating, setAnimating] = useState(false);
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setValue("");
+  }, [pathname]);
 
   const draw = useCallback(() => {
     if (!inputRef.current) return;

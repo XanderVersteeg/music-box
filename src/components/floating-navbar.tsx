@@ -18,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { placeholders } from "@/data";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-import { AccessToken, Search } from "@/types";
+import { AccessToken, Search, Artist, Album } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserType } from "@/app/api/users/getUser/route";
+import { usePathname } from "next/navigation";
 
 export const FloatingNav = ({
   navItems,
@@ -93,6 +94,35 @@ export const FloatingNav = ({
     },
   });
 
+  const { data: searchArtist } = useQuery({
+    queryKey: ["searchArtists", searchInput],
+    queryFn: async (): Promise<Search> => {
+      if (tokenResponse?.access_token) {
+        const response = await fetch(
+          "https://api.spotify.com/v1/search?q=" + searchInput + "&type=artist",
+          {
+            method: "GET",
+            headers: { Authorization: "Bearer " + tokenResponse.access_token },
+          }
+        );
+
+        return response.json();
+      }
+
+      return {
+        artists: {
+          items: [],
+          href: "",
+          limit: 0,
+          next: "",
+          offset: 0,
+          previous: "",
+          total: 0,
+        },
+      };
+    },
+  });
+
   const { data: searchAlbum } = useQuery({
     queryKey: ["searchAlbums", searchInput],
     queryFn: async (): Promise<Search | undefined> => {
@@ -107,23 +137,17 @@ export const FloatingNav = ({
 
         return response.json();
       }
-    },
-  });
-
-  const { data: searchArtist } = useQuery({
-    queryKey: ["searchArtists", searchInput],
-    queryFn: async (): Promise<Search | undefined> => {
-      if (tokenResponse?.access_token) {
-        const response = await fetch(
-          "https://api.spotify.com/v1/search?q=" + searchInput + "&type=artist",
-          {
-            method: "GET",
-            headers: { Authorization: "Bearer " + tokenResponse.access_token },
-          }
-        );
-
-        return response.json();
-      }
+      return {
+        artists: {
+          items: [],
+          href: "",
+          limit: 0,
+          next: "",
+          offset: 0,
+          previous: "",
+          total: 0,
+        },
+      };
     },
   });
 
@@ -169,6 +193,12 @@ export const FloatingNav = ({
     e.preventDefault();
     setSearchInput("");
   };
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setShowResults(false);
+  }, [pathname]);
 
   return (
     <AnimatePresence mode="wait">
@@ -294,11 +324,7 @@ export const FloatingNav = ({
   );
 };
 
-const renderSearchResults = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  items: any[],
-  isArtist: boolean
-) => {
+const renderSearchResults = (items: (Artist | Album)[], isArtist: boolean) => {
   return items.slice(0, 2).map((item, index) => (
     <Link
       href={`/${isArtist ? "artist" : "album"}/${item.id}`}
