@@ -9,13 +9,19 @@ export type UserType = typeof users.$inferInsert;
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email");
+    const username = searchParams.get("username");
 
-    if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    if (!username) {
+      return NextResponse.json(
+        { error: "Username is required" },
+        { status: 400 }
+      );
     }
 
-    const res = await db.select().from(users).where(eq(users.email, email));
+    const res = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, username));
 
     if (res.length === 0) {
       return NextResponse.json(
