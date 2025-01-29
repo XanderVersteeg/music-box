@@ -1,14 +1,42 @@
+import { MaxWidthWrapper } from "@/components/max-width-wrapper";
+
 export default function Home() {
   return (
-    <>
-      <div className="p-40">Home</div>
-      <div className="p-40">Home</div>
-      <div className="p-40">Home</div>
-      <div className="p-40">Home</div>
-      <div className="p-40">Home</div>
-      <div className="p-40">Home</div>
-      <div className="p-40">Home</div>
-      <div className="p-40">Home</div>
-    </>
+    <MaxWidthWrapper>
+      <div className="space-y-16">
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+        <div>home</div>
+      </div>
+    </MaxWidthWrapper>
   );
 }
