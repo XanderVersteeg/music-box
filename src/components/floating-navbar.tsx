@@ -318,26 +318,13 @@ export const FloatingNav = ({
         {/* Results */}
         {showResults &&
           searchAlbum?.albums?.items?.length &&
-          searchArtist?.artists?.items.length &&
-          searchAlbum?.albums?.items.length > 0 &&
-          searchArtist?.artists?.items.length > 0 && (
+          searchArtist?.artists?.items?.length && (
             <div className="mt-4 w-full flex flex-col items-center">
-              {/* Render Top 2 Artists */}
-              <div className="w-full max-w-md" style={{ width: "26rem" }}>
-                {renderSearchResults(searchArtist?.artists?.items, "artist")}
+              <div className="w-full max-w-md md:w-104">
+                {searchUser && renderSearchResults(searchUser)}
+                {renderSearchResults(searchArtist.artists.items, "artist")}
+                {renderSearchResults(searchAlbum.albums.items, "album")}
               </div>
-
-              {/* Render Top 2 Albums */}
-              <div className="w-full max-w-md" style={{ width: "26rem" }}>
-                {renderSearchResults(searchAlbum?.albums?.items, "album")}
-              </div>
-
-              {/* Render Top 2 Albums */}
-              {searchUser && (
-                <div className="w-full max-w-md" style={{ width: "26rem" }}>
-                  {renderSearchResults(searchUser)}
-                </div>
-              )}
             </div>
           )}
       </motion.div>
@@ -348,37 +335,39 @@ export const FloatingNav = ({
 const renderSearchResults = (
   items: (Artist | Album | UserType)[],
   type?: string
-) => {
-  return items.slice(0, 2).map((item, index) => (
-    <Link
-      href={`/${type ? `${type}/` : ""}${
-        type ? `${item.id}` : `${(item as UserType).username}`
-      }`}
-      key={`${type || "item"}-${index}`}
-      className="py-4 overflow-hidden px-2 dark:hover:bg-neutral-800 rounded-md flex items-center space-x-6 mb-4"
-    >
-      <Image
-        src={
-          type && (item as Album | Artist).images
-            ? (item as Album | Artist).images[0]?.url ??
-              "https://i.scdn.co/image/ab67616d0000b273cad190f1a73c024e5a40dddd"
-            : "image" in item
-            ? item.image ??
-              "https://i.scdn.co/image/ab67616d0000b273cad190f1a73c024e5a40dddd"
-            : "https://i.scdn.co/image/ab67616d0000b273cad190f1a73c024e5a40dddd"
-        }
-        alt={
-          type
-            ? item.name ?? "No name available"
-            : (item as UserType).username ?? "No username available"
-        }
-        className="rounded-md"
-        width={80}
-        height={80}
-      />
-      <span className="text-lg font-medium text-neutral-800 dark:text-neutral-100">
-        {type ? item.name : (item as UserType).username}
-      </span>
-    </Link>
-  ));
-};
+) =>
+  items.slice(0, 2).map((item, index) => {
+    const isUser = !type;
+    const imageUrl =
+      !isUser && (item as Album | Artist).images?.[0]?.url
+        ? (item as Album | Artist).images[0].url
+        : (item as UserType).image ||
+          "https://i.scdn.co/image/ab67616d0000b273cad190f1a73c024e5a40dddd";
+
+    const displayName = isUser
+      ? (item as UserType).username
+      : (item as Artist | Album).name || "Unknown";
+
+    const href = `/${type || "user"}/${
+      isUser ? (item as UserType).username : item.id
+    }`;
+
+    return (
+      <Link
+        href={href}
+        key={`${type || "user"}-${index}`}
+        className="py-4 px-2 overflow-hidden dark:hover:bg-neutral-800 rounded-md flex items-center space-x-6 mb-4"
+      >
+        <Image
+          src={imageUrl}
+          alt={displayName || "Unknown"}
+          className="rounded-md"
+          width={80}
+          height={80}
+        />
+        <span className="text-lg font-medium text-neutral-800 dark:text-neutral-100">
+          {displayName}
+        </span>
+      </Link>
+    );
+  });
