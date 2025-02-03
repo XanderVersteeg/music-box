@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 "use client";
 
 import {
@@ -29,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserType } from "@/app/api/users/getUser/route";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export const FloatingNav = ({
   navItems,
@@ -60,6 +59,7 @@ export const FloatingNav = ({
 
   const navRef = useRef<HTMLDivElement>(null);
 
+  // getUser useQuery
   const { data, isLoading } = useQuery({
     queryKey: ["getUser", session?.user?.email],
     queryFn: async (): Promise<Array<UserType>> => {
@@ -71,6 +71,7 @@ export const FloatingNav = ({
     },
   });
 
+  // spotifyToken useQuery
   const { data: tokenResponse } = useQuery({
     queryKey: ["spotifyToken"],
     queryFn: async (): Promise<AccessToken> => {
@@ -94,6 +95,7 @@ export const FloatingNav = ({
     },
   });
 
+  // searchArtist useQuery
   const { data: searchArtist } = useQuery({
     queryKey: ["searchArtists", searchInput],
     queryFn: async (): Promise<Search> => {
@@ -123,6 +125,7 @@ export const FloatingNav = ({
     },
   });
 
+  // searchAlbum useQuery
   const { data: searchAlbum } = useQuery({
     queryKey: ["searchAlbums", searchInput],
     queryFn: async (): Promise<Search | undefined> => {
@@ -148,6 +151,17 @@ export const FloatingNav = ({
           total: 0,
         },
       };
+    },
+  });
+
+  const { data: searchUser } = useQuery({
+    queryKey: ["searchUser", searchInput],
+    queryFn: async (): Promise<Array<UserType>> => {
+      const response = await fetch(
+        `/api/users/searchUser?username=${searchInput}`
+      );
+
+      return response.json();
     },
   });
 
@@ -310,13 +324,20 @@ export const FloatingNav = ({
             <div className="mt-4 w-full flex flex-col items-center">
               {/* Render Top 2 Artists */}
               <div className="w-full max-w-md" style={{ width: "26rem" }}>
-                {renderSearchResults(searchArtist?.artists?.items, true)}
+                {renderSearchResults(searchArtist?.artists?.items, "artist")}
               </div>
 
               {/* Render Top 2 Albums */}
               <div className="w-full max-w-md" style={{ width: "26rem" }}>
-                {renderSearchResults(searchAlbum?.albums?.items, false)}
+                {renderSearchResults(searchAlbum?.albums?.items, "album")}
               </div>
+
+              {/* Render Top 2 Albums */}
+              {searchUser && (
+                <div className="w-full max-w-md" style={{ width: "26rem" }}>
+                  {renderSearchResults(searchUser)}
+                </div>
+              )}
             </div>
           )}
       </motion.div>
@@ -324,20 +345,39 @@ export const FloatingNav = ({
   );
 };
 
-const renderSearchResults = (items: (Artist | Album)[], isArtist: boolean) => {
+const renderSearchResults = (
+  items: (Artist | Album | UserType)[],
+  type?: string
+) => {
   return items.slice(0, 2).map((item, index) => (
     <Link
-      href={`/${isArtist ? "artist" : "album"}/${item.id}`}
-      key={`${isArtist ? "artist" : "album"}-${index}`}
-      className="py-4 px-2 dark:hover:bg-neutral-800 rounded-md flex items-center space-x-6 mb-4"
+      href={`/${type ? `${type}/` : ""}${
+        type ? `${item.id}` : `${(item as UserType).username}`
+      }`}
+      key={`${type || "item"}-${index}`}
+      className="py-4 overflow-hidden px-2 dark:hover:bg-neutral-800 rounded-md flex items-center space-x-6 mb-4"
     >
-      <img
-        src={item.images?.[0]?.url || "/placeholder.jpg"}
-        alt={item.name}
-        className="w-20 h-auto rounded-md"
+      <Image
+        src={
+          type && (item as Album | Artist).images
+            ? (item as Album | Artist).images[0]?.url ??
+              "https://i.scdn.co/image/ab67616d0000b273cad190f1a73c024e5a40dddd"
+            : "image" in item
+            ? item.image ??
+              "https://i.scdn.co/image/ab67616d0000b273cad190f1a73c024e5a40dddd"
+            : "https://i.scdn.co/image/ab67616d0000b273cad190f1a73c024e5a40dddd"
+        }
+        alt={
+          type
+            ? item.name ?? "No name available"
+            : (item as UserType).username ?? "No username available"
+        }
+        className="rounded-md"
+        width={80}
+        height={80}
       />
       <span className="text-lg font-medium text-neutral-800 dark:text-neutral-100">
-        {item.name}
+        {type ? item.name : (item as UserType).username}
       </span>
     </Link>
   ));
