@@ -7,9 +7,16 @@ import { auth } from "@/auth";
 
 export async function POST(req: NextRequest) {
   const Session = await auth();
+  const { followerId, followingId } = await req.json();
+
   if (Session) {
     try {
-      const { followerId, followingId } = await req.json();
+      if (Session?.user?.id !== followerId) {
+        return NextResponse.json(
+          { error: "User is not authenticated" },
+          { status: 401 }
+        );
+      }
 
       if (!followerId || !followingId) {
         return NextResponse.json(

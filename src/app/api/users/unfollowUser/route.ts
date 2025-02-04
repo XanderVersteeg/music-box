@@ -7,9 +7,16 @@ import { auth } from "@/auth";
 
 export async function DELETE(req: NextRequest) {
   const Session = await auth();
+  const { followerId, followingId } = await req.json();
+
   if (Session) {
     try {
-      const { followerId, followingId } = await req.json();
+      if (Session?.user?.id !== followerId) {
+        return NextResponse.json(
+          { error: "User is notauthenticated" },
+          { status: 401 }
+        );
+      }
 
       if (!followerId || !followingId) {
         return NextResponse.json(
