@@ -321,7 +321,7 @@ export const FloatingNav = ({
           searchArtist?.artists?.items?.length && (
             <div className="mt-4 w-full flex flex-col items-center">
               <div className="w-full max-w-md md:w-104">
-                {searchUser && renderSearchResults(searchUser)}
+                {searchUser && searchUser[0] && renderSearchResults(searchUser)}
                 {renderSearchResults(searchArtist.artists.items, "artist")}
                 {renderSearchResults(searchAlbum.albums.items, "album")}
               </div>
@@ -348,9 +348,9 @@ const renderSearchResults = (
       ? (item as UserType).username
       : (item as Artist | Album).name || "Unknown";
 
-    const href = `/${type || "user"}/${
-      isUser ? (item as UserType).username : item.id
-    }`;
+    const href = type
+      ? `/${type}/${isUser ? (item as UserType).username : item.id}`
+      : `/${isUser ? (item as UserType).username : item.id}`;
 
     return (
       <Link
