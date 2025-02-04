@@ -1,12 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { followings } from "@/db/schema";
 import { auth } from "@/auth";
 
-export const DELETE = auth(async function DELETE(req) {
-  if (req.auth) {
+export async function DELETE(req: NextRequest) {
+  const Session = await auth();
+  if (Session) {
     try {
       const { followerId, followingId } = await req.json();
 
@@ -45,4 +46,4 @@ export const DELETE = auth(async function DELETE(req) {
   } else {
     return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
   }
-});
+}

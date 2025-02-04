@@ -1,12 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { followings } from "@/db/schema";
 import { auth } from "@/auth";
 
-export const POST = auth(async function POST(req) {
-  if (req.auth) {
+export async function POST(req: NextRequest) {
+  const Session = await auth();
+  if (Session) {
     try {
       const { followerId, followingId } = await req.json();
 
@@ -43,7 +44,7 @@ export const POST = auth(async function POST(req) {
 
       const res = await db
         .insert(followings)
-        .values({ followerId: followerId, followingId: followingId });
+        .values({ followerId, followingId });
 
       if (res.rowCount === 0) {
         return NextResponse.json(
@@ -55,7 +56,6 @@ export const POST = auth(async function POST(req) {
       return NextResponse.json({ success: true });
     } catch (error) {
       console.log("Error following user:", error);
-
       return NextResponse.json(
         { error: "An unexpected error occurred" },
         { status: 500 }
@@ -64,4 +64,4 @@ export const POST = auth(async function POST(req) {
   } else {
     return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
   }
-});
+}
